@@ -11,6 +11,7 @@ class LinkedinConnect(Document):
     refresh_token: Optional[str] = None
     created_at: datetime = datetime.now()
     updated_at: Optional[datetime] = None
+    expires_in:Optional[datetime] = None
 
     class Settings:
         name = "linkedin_connects"  # MongoDB collection name

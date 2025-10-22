@@ -5,4 +5,5 @@ class LinkedinConnectCreate(BaseModel):
     linkedin_id: str
     access_token: str
     refresh_token: Optional[str] = None 
+    expires_in: Optional[str] = None  # ISO formatted datetime string
     

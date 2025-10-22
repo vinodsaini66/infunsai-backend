@@ -45,10 +45,16 @@ async def login(form_data: UserLogin):
             detail="Invalid email or password"
         )
 
-    access_token = create_access_token({"sub": str(user.id)}) 
-    
-    linkedin = await LinkedinConnect.find_one({"user_id": user.id}) 
+    access_token = create_access_token({"sub": str(user.id)})
+    linkedin = await LinkedinConnect.find_one({"user_id": user.id})
     linkedin_access_token = None
     if linkedin:
        linkedin_access_token = linkedin.access_token
-    return {"access_token": access_token, "token_type": "bearer","user":user,"linkedin_access_token":linkedin_access_token}
+    return {
+            "access_token": access_token, 
+            "token_type": "bearer",
+            "user":user,
+            "linkedin_access_token":linkedin_access_token,
+            "is_linkedin_connected": user.is_linkedin_connected,
+            "expires_in":linkedin.expires_in if linkedin else None
+            }

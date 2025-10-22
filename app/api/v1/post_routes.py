@@ -11,15 +11,20 @@ router = APIRouter()
 # Create Post
 @router.post("/", response_model=PostOut)
 async def create_post(data: PostCreate, request: Request):
-    user=request.state.user 
+    user = request.state.user
+
     post = Post(
         user_id=ObjectId(user["sub"]),
         content=data.content,
         content_type=data.content_type,
         status=data.status,
-        schedule_at=data.schedule_at
+        schedule_at=data.schedule_at,
+        hashtags=data.hashtags,
+        visibility=data.visibility
     )
+
     await post.insert()
+
     return PostOut(
         id=str(post.id),
         content=post.content,
@@ -29,6 +34,8 @@ async def create_post(data: PostCreate, request: Request):
         posted_at=post.posted_at,
         created_at=post.created_at,
         updated_at=post.updated_at,
+        hashtags=post.hashtags,
+        visibility=post.visibility
     )
 
 @router.get("/scheduled")
@@ -58,6 +65,8 @@ async def get_scheduled_posts(request: Request):
                     posted_at=post.posted_at,
                     created_at=post.created_at,
                     updated_at=post.updated_at,
+                    hashtags=post.hashtags,
+                    visibility=post.visibility
                 )
             )
 

@@ -20,7 +20,8 @@ async def create_linkedin_connection(request: Request, data: LinkedinConnectCrea
         user_id=user_id,
         linkedin_id=data.linkedin_id,
         access_token=data.access_token,
-        refresh_token=data.refresh_token
+        refresh_token=data.refresh_token,
+        expires_in=data.expires_in
     ) 
     
     await linkedin.insert()
