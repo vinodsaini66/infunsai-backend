@@ -4,6 +4,5 @@ from typing import Optional
 class LinkedinConnectCreate(BaseModel):
     linkedin_id: str
     access_token: str
-    refresh_token: Optional[str] = None 
-    expires_in: Optional[str] = None  # ISO formatted datetime string
-    
+    refresh_token: Optional[str] = None
+    expires_in: Optional[int] = None  # in seconds
