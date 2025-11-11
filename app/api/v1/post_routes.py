@@ -40,8 +40,7 @@ async def create_post(data: PostCreate, request: Request):
 
 @router.get("/scheduled")
 async def get_scheduled_posts(request: Request):
-    user=request.state.user 
-    print(user)
+    user = request.state.user
     posts = await Post.find(
         {
             "user_id": ObjectId(user["sub"]),
@@ -49,13 +48,11 @@ async def get_scheduled_posts(request: Request):
         }
     ).sort("+schedule_at").to_list()
 
-    grouped_posts: Dict[str, List[PostOut]] = defaultdict(list)
+    result: List[PostOut] = []
 
     for post in posts:
         if post.schedule_at:
-            print("start")
-            date_key = post.schedule_at.date().isoformat()  # "YYYY-MM-DD"
-            grouped_posts[date_key].append(
+            result.append(
                 PostOut(
                     id=str(post.id),
                     content=post.content,
@@ -70,7 +67,62 @@ async def get_scheduled_posts(request: Request):
                 )
             )
 
-    return grouped_posts
+    # Always return an array, even if empty
+    return result
+
+@router.get("/scheduled/calender")
+async def get_scheduled_posts_calender(request: Request):
+    user = request.state.user
+    posts = await Post.find(
+        {
+            "user_id": ObjectId(user["sub"]),
+            "status": "scheduled"
+        }
+    ).sort("+schedule_at").to_list()
+
+    grouped_posts: Dict[str, List[PostOut]] = defaultdict(list)
+
+    for post in posts:
+        if post.schedule_at:
+            date_key = post.schedule_at.date().isoformat()
+            grouped_posts[date_key].append(PostOut(**post.dict()))
+
+    # Convert dict to list for clean JSON
+    result = [{"date": k, "posts": v} for k, v in grouped_posts.items()]
+
+    return result
+# async def get_scheduled_posts(request: Request):
+#     user=request.state.user 
+#     print(user)
+#     posts = await Post.find(
+#         {
+#             "user_id": ObjectId(user["sub"]),
+#             "status": "scheduled"
+#         }
+#     ).sort("+schedule_at").to_list()
+
+#     grouped_posts: Dict[str, List[PostOut]] = defaultdict(list)
+
+#     for post in posts:
+#         if post.schedule_at:
+#             print("start")
+#             date_key = post.schedule_at.date().isoformat()  # "YYYY-MM-DD"
+#             grouped_posts[date_key].append(
+#                 PostOut(
+#                     id=str(post.id),
+#                     content=post.content,
+#                     content_type=post.content_type,
+#                     status=post.status,
+#                     schedule_at=post.schedule_at,
+#                     posted_at=post.posted_at,
+#                     created_at=post.created_at,
+#                     updated_at=post.updated_at,
+#                     hashtags=post.hashtags,
+#                     visibility=post.visibility
+#                 )
+#             )
+
+#     return grouped_posts
 
 # Get All Posts (with filter + sort)
 @router.get("/", response_model=List[PostOut])

@@ -6,10 +6,21 @@ from app.db.mongo import connect_to_mongo, close_mongo_connection
 from app.core.logging_config import setup_logging
 import logging
 from app.scheduler.post import start_post_scheduler
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="FastAPI + MongoDB + JWT",debug=True)
 setup_logging()
 logger = logging.getLogger(__name__)
+
+
+# CORS Middleware (Allow all for now)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all domains
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Middleware
 app.add_middleware(AuthMiddleware)
